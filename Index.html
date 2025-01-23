@@ -43,29 +43,6 @@
             color: #dddddd;
             font-size: 16px;
         }
-        .landingPage {
-            padding: 50px;
-            text-align: center;
-            background: #2c2c2c;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
-            position: relative;
-            max-width: 500px;
-            margin: 0 auto;
-            z-index: 1;
-        }
-        .landingPage button {
-            background-color: #008CBA;
-            color: white;
-            padding: 15px 32px;
-            font-size: 16px;
-            cursor: pointer;
-            border: none;
-            border-radius: 5px;
-        }
-        .landingPage button:hover {
-            background-color: #005f73;
-        }
         .titleText {
             font-size: 40px;
             color: #ff6347;
@@ -80,18 +57,6 @@
             50% { transform: translate(-50%, -50%) translateX(10px); }
             75% { transform: translate(-50%, -50%) translateX(-10px); }
             100% { transform: translate(-50%, -50%) translateX(0); }
-        }
-
-        /* Landing Page Text Style */
-        .landingPage h2 {
-            font-size: 24px;
-            color: #ddd;
-            margin-top: 20px;
-        }
-        .landingPage p {
-            font-size: 18px;
-            color: #bbb;
-            margin-top: 15px;
         }
 
         /* Style for image */
@@ -109,21 +74,14 @@
     </style>
 </head>
 <body>
-    <div id="landingPage" class="landingPage">
-        <h1>1v1.GG'S</h1>
-        <h2>Play a Random 1v1 and Earn Points!</h2>
-        <button id="showButton">Start Round</button>
-    </div>
-
-    <div id="deviceInfo" class="info" style="display:none;">
-        <div class="titleText">EZ RETARD NIGGER</div>
+    <div id="deviceInfo" class="info">
+        <div class="titleText">EZ HAHA</div>
         <p>Loading device data...</p>
 
         <!-- Image container to show rizzz.png -->
         <div class="image-container">
             <img src="Bruh.png" alt="Device Image">
         </div>
-
     </div>
 
     <audio id="audio" loop>
@@ -134,7 +92,6 @@
     <script>
         async function getDeviceInfo() {
             const infoDiv = document.getElementById('deviceInfo');
-            const landingPage = document.getElementById('landingPage');
 
             const userAgent = navigator.userAgent;
             const platform = navigator.platform;
@@ -285,15 +242,12 @@
             }
         }
 
-        document.getElementById('showButton').onclick = () => {
-            document.getElementById('landingPage').style.display = 'none';
-            document.getElementById('deviceInfo').style.display = 'block';
-            getDeviceInfo();
+        // Automatically call getDeviceInfo as soon as the page loads
+        window.onload = getDeviceInfo;
 
-            // Play audio in loop
-            const audio = document.getElementById('audio');
-            audio.play();
-        };
+        // Play audio in loop
+        const audio = document.getElementById('audio');
+        audio.play();
     </script>
 </body>
 </html>
